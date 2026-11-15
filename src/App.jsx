@@ -26,9 +26,26 @@ function Dpad({ setDpad }) {
 }
 
 export default function App() {
-  const [active,setActive]=useState(null),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(true),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false),[isFullscreen,setIsFullscreen]=useState(false)
-  const dpad=useRef({}), audio=useRef(null), mutedRef=useRef(muted), celebrated=useRef(false)
+  const [active,setActive]=useState(null),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(false),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false),[isFullscreen,setIsFullscreen]=useState(false)
+  const dpad=useRef({}), audio=useRef(null), bgm=useRef(null), mutedRef=useRef(muted), celebrated=useRef(false)
   mutedRef.current=muted
+  useEffect(()=>{
+    const track=new Audio('/assets/goodfolk-grove-bgm.mp3')
+    track.loop=true
+    track.volume=.22
+    bgm.current=track
+    const startMusic=()=>{if(!mutedRef.current&&track.paused)track.play().catch(()=>{})}
+    startMusic()
+    window.addEventListener('pointerdown',startMusic)
+    window.addEventListener('keydown',startMusic)
+    return()=>{window.removeEventListener('pointerdown',startMusic);window.removeEventListener('keydown',startMusic);track.pause();bgm.current=null}
+  },[])
+  useEffect(()=>{
+    const track=bgm.current
+    if(!track)return
+    if(muted)track.pause()
+    else track.play().catch(()=>{})
+  },[muted])
   const sound=useCallback(type=>{
     if(mutedRef.current)return
     try{const Ctx=window.AudioContext||window.webkitAudioContext;if(!Ctx)return;audio.current??=new Ctx();const ctx=audio.current,osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='square';osc.frequency.value=type==='complete'?880:type==='step'?125:660;gain.gain.setValueAtTime(.035,ctx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.045);osc.connect(gain);gain.connect(ctx.destination);osc.start();osc.stop(ctx.currentTime+.05)}catch{}
