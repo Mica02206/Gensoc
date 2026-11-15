@@ -6,7 +6,7 @@ import DialogueBox from './components/DialogueBox'
 import FieldJournal from './components/FieldJournal'
 
 function Minimap({ position, completed }) {
-  const places=[[19,48],[50,51],[78,48],[23,70],[53,72],[78,71]]
+  const places=[[19,36],[49,45],[78,36],[23,52],[52,52],[80,52]]
   return <div className="minimap" aria-label="Village minimap"><div className="mini-path horizontal"/><div className="mini-path vertical"/>{places.map(([x,y],i)=><span key={i} className={`mini-npc ${completed.includes(i)?'done':''}`} style={{left:`${x}%`,top:`${y}%`}}>{completed.includes(i)?'✓':''}</span>)}<span className="mini-player" style={{left:`${position.x*100}%`,top:`${position.y*100}%`}}/></div>
 }
 

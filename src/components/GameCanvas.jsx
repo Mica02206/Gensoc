@@ -67,7 +67,7 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
   }, [])
   useEffect(() => {
     const canvas = canvasRef.current, ctx = canvas.getContext('2d')
-    const scenery = new Image(); scenery.src = '/assets/grove-background.png'
+    const scenery = new Image(); scenery.src = '/assets/village-map.png'
     ctx.imageSmoothingEnabled = false
     let previous = performance.now(), walk = 0, footstep = 0, lastPositionSent = 0
     const draw = now => {
@@ -78,7 +78,7 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       const mag = Math.hypot(dx,dy) || 1, speed = (k.shift ? 3.4 : 2.4) * dt
       const p = player.current
       let nx = Math.max(28, Math.min(W - 28, p.x + dx/mag*speed)), ny = Math.max(24, Math.min(H - 22, p.y + dy/mag*speed))
-      const blocked = [{x:42,y:50,w:175,h:185},{x:304,y:42,w:300,h:178},{x:550,y:52,w:380,h:184}]
+      const blocked = [{x:42,y:15,w:250,h:182},{x:365,y:12,w:225,h:188},{x:655,y:24,w:260,h:176},{x:45,y:330,w:210,h:195},{x:300,y:340,w:320,h:192},{x:640,y:326,w:285,h:204}]
         .some(b => nx>b.x&&nx<b.x+b.w&&ny>b.y&&ny<b.y+b.h)
       if (!blocked) { p.x = nx; p.y = ny }
       if (dx || dy) { walk += dt; footstep += dt; frame.current = Math.floor(walk / 8) % 2; if (footstep > 22) { sound('step'); footstep = 0 } } else footstep = 0
