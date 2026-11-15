@@ -148,3 +148,14 @@ body{overflow:hidden}
 .world-frame:has(.dialogue-wrap)::before{inset:0;z-index:2;background:rgba(23,34,24,.28);filter:none;transform:none}
 @media(orientation:landscape){.game-canvas{width:max(100%,160vh);height:max(100%,62.5vw)}}
 @media(orientation:portrait){.game-canvas{width:min(100%,160vh);height:min(100%,62.5vw)}}
+.dialogue-card.reading-mode{cursor:pointer}
+.dialogue-card.reading-mode .dialogue-header>span{visibility:hidden}
+.dialogue-card.reading-mode .story-text{min-height:3.5em;max-height:20vh;padding:8px 14px 8px 0;font:12px/1.9 'Silkscreen',var(--mono);color:#6a5338;letter-spacing:.01em;cursor:pointer}
+.dialogue-card.reading-mode .typing-cursor{font-size:12px;color:#9b7143}
+.dialogue-card.reading-mode .dialogue-footer{margin-top:8px;padding-top:7px;border-top:1px solid #d9c39e}
+.dialogue-card.reading-mode .saved-tag{font-size:8px;color:#8c744f}
+.dialogue-card.reading-mode .next-line-button{min-width:92px}
+.click-hint{position:absolute;right:31px;bottom:12px;color:#a18b67;font:7px 'Silkscreen',var(--mono);letter-spacing:0;pointer-events:none}
+.click-hint span{margin-left:5px;color:#b28a50}
+.dialogue-card.reading-mode .dialogue-footer{padding-right:145px}
+@media(max-width:560px){.dialogue-card.reading-mode .story-text{font-size:8px;line-height:1.65;max-height:17vh;padding-right:3px}.dialogue-card.reading-mode .dialogue-footer{padding-right:85px}.dialogue-card.reading-mode .saved-tag{font-size:6px}.dialogue-card.reading-mode .next-line-button{min-width:68px}.click-hint{right:12px;bottom:10px;font-size:5px}}

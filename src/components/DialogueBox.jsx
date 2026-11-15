@@ -5,20 +5,41 @@ function Portrait({ npc }) {
   return <div className="portrait-art" role="img" aria-label={`${npc.name} portrait`} style={{backgroundImage:"url('/assets/npc-portraits.png')",backgroundPosition:`${col*50}% ${row*100}%`}} />
 }
 
+function splitDialogue(text) {
+  if (!text) return []
+  const segmenter = typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined, { granularity: 'sentence' }) : null
+  return text.split(/\n\s*\n/).flatMap(paragraph => {
+    const parts = segmenter
+      ? Array.from(segmenter.segment(paragraph), part => part.segment.trim())
+      : (paragraph.match(/[^.!?]+(?:[.!?]+|$)/g) || [paragraph]).map(part => part.trim())
+    return parts.filter(Boolean)
+  })
+}
+
 export default function DialogueBox({ npc, completed, saved, onSave, onComplete, onClose, sound }) {
-  const [mode,setMode]=useState('menu'), [shown,setShown]=useState(false), [answer,setAnswer]=useState(null), [typed,setTyped]=useState('')
+  const [mode,setMode]=useState('menu'), [answer,setAnswer]=useState(null), [typed,setTyped]=useState(''), [lineIndex,setLineIndex]=useState(0)
   const text = mode==='facts' ? npc.facts : mode==='context' ? npc.context : mode==='result' ? npc.quiz.explain : ''
-  useEffect(()=>{setShown(false);setAnswer(null);setMode('menu')},[npc.id])
+  const lines = (mode==='facts'||mode==='context') ? splitDialogue(text) : text ? [text] : []
+  const currentLine = lines[lineIndex] || ''
+  useEffect(()=>{setAnswer(null);setMode('menu');setLineIndex(0);setTyped('')},[npc.id])
   useEffect(()=>{
-    setTyped(''); if (!text) return
-    let index=0, ticks=0; const interval=setInterval(()=>{index=Math.min(index+2,text.length);setTyped(text.slice(0,index));ticks++;if(index>=text.length)clearInterval(interval);else if(ticks%6===0)sound('blip')},18)
+    setTyped(''); if (!currentLine) return
+    let index=0, ticks=0; const interval=setInterval(()=>{index=Math.min(index+2,currentLine.length);setTyped(currentLine.slice(0,index));ticks++;if(index>=currentLine.length)clearInterval(interval);else if(ticks%6===0)sound('blip')},18)
     return()=>clearInterval(interval)
-  },[text,sound])
-  const choose = next => { setMode(next);setShown(false);setAnswer(null); if(next==='facts'||next==='context') onSave(npc.id,next) }
-  const answerQuiz = index => { setAnswer(index);if(index===npc.quiz.answer){onComplete(npc.id);setMode('result')} else setMode('retry') }
+  },[currentLine,lineIndex,sound])
+  const choose = next => { setMode(next);setLineIndex(0);setTyped('');setAnswer(null); if(next==='facts'||next==='context') onSave(npc.id,next) }
+  const advanceLine = () => {
+    if (typed.length < currentLine.length) { setTyped(currentLine); return }
+    if (lineIndex < lines.length-1) setLineIndex(index=>index+1)
+    else setMode('read-done')
+  }
+  const handlePanelClick = event => {
+    if ((mode==='facts'||mode==='context') && !event.target.closest('button')) advanceLine()
+  }
+  const answerQuiz = index => { setAnswer(index);if(index===npc.quiz.answer){onComplete(npc.id);setLineIndex(0);setMode('result')} else setMode('retry') }
   return <div className="dialogue-wrap" role="dialog" aria-modal="true" aria-label={`Conversation with ${npc.name}`}>
     <div className="dialogue-portrait"><Portrait npc={npc}/><div className="portrait-caption">{npc.name}</div></div>
-    <section className="dialogue-card">
+    <section className={`dialogue-card ${mode==='facts'||mode==='context'?'reading-mode':''}`} onClick={handlePanelClick}>
       <header className="dialogue-header"><span><i className="status-dot" />{npc.role}</span><button className="icon-close" onClick={onClose} aria-label="Close conversation">×</button></header>
       {mode==='menu' && <>
         <h2>What would you like to ask?</h2><p className="dialogue-sub">Choose a topic to explore with {npc.name.split(' ')[0]}.</p>
@@ -30,9 +51,13 @@ export default function DialogueBox({ npc, completed, saved, onSave, onComplete,
       </>}
       {(mode==='facts'||mode==='context')&&<>
         <div className="chapter-kicker">MODULE {npc.chapter} · {npc.title.toUpperCase()}</div><h2>{mode==='facts'?'A little knowledge':'Out in the world'}</h2>
-        <div className="story-text">{typed}{typed.length<text.length&&<span className="typing-cursor">▌</span>}</div>
-        <div className="dialogue-footer"><span className="saved-tag">✦ Added to your journal</span><button className="small-secondary" onClick={()=>setShown(true)}>Continue <span>→</span></button></div>
-        {shown&&<div className="after-reading"><span>Want to try a quick knowledge check?</span><button className="primary-button" onClick={()=>choose('quiz')}>Take the quiz <span>→</span></button><button className="link-button" onClick={()=>setMode('menu')}>Choose another topic</button></div>}
+        <div className="story-text" aria-live="polite">{typed}{typed.length<currentLine.length&&<span className="typing-cursor">▌</span>}</div>
+        <div className="dialogue-footer"><span className="saved-tag">✦ JOURNAL · {String(lineIndex+1).padStart(2,'0')} / {String(lines.length).padStart(2,'0')}</span><button className="small-secondary next-line-button" onClick={advanceLine}>{typed.length<currentLine.length?'Show text':'Next'} <span>→</span></button></div>
+        <div className="click-hint">CLICK THE DIALOGUE TO CONTINUE <span>▼</span></div>
+      </>}
+      {mode==='read-done'&&<>
+        <div className="chapter-kicker">MODULE {npc.chapter} · NOTES SAVED</div><h2>You’ve heard the main idea.</h2><p className="feedback-text">The things {npc.name.split(' ')[0]} shared are saved in your Field Journal. Ready for a quick knowledge check?</p>
+        <div className="result-actions"><button className="primary-button" onClick={()=>choose('quiz')}>Take the quiz <span>→</span></button><button className="small-secondary" onClick={()=>setMode('menu')}>More topics</button></div>
       </>}
       {mode==='quiz'&&<>
         <div className="chapter-kicker">MODULE {npc.chapter} · KNOWLEDGE CHECK</div><h2>{npc.quiz.question}</h2>
