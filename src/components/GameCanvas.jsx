@@ -122,10 +122,12 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       actors.forEach(actor=>{
         if (actor.player) {
           const spriteIndex = dy < 0 ? 9 : dx < 0 ? 7 : dx > 0 ? 8 : 6
-          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,spriteIndex,p.x,p.y,dx||dy?frame.current:0)
+          const idleBob = Math.round(1 + Math.sin(now / 650) )
+          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,spriteIndex,p.x,p.y,dx||dy?frame.current:idleBob)
           else drawPerson(ctx,p.x,p.y,'#d28154','#e6b48b','#53433e',1.75,frame.current,dx?(dx>0?'right':'left'):dy<0?'up':'down')
         } else { const m=actor.m, x=m.x/100*W, y=m.y/100*H
-          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,m.id,x,y)
+          const idleBob = Math.round(1 + Math.sin(now / 650 + m.id * 1.7))
+          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,m.id,x,y,idleBob)
           else drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
           const done=completed.includes(m.id), pulse=Math.sin(now/220 + m.id)*2
           rounded(ctx,x-9,y-98+pulse,18,17,5,done?'#718d66':'#fff4d7');ctx.fillStyle=done?'#fff8e8':'#c67957';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-86+pulse)
