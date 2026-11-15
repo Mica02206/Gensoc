@@ -204,3 +204,4 @@ body{overflow:hidden}
 .intro-panel{display:flex;align-items:center;min-height:clamp(150px,20vh,190px);padding-left:clamp(165px,20vw,245px);cursor:pointer}
 .intro-panel .speech-line{min-height:3.4em;padding-right:20px}
 @media(max-width:560px){.intro-portrait{left:0;bottom:-3px;width:clamp(105px,29vw,130px);height:clamp(130px,23vh,165px)}.intro-panel{min-height:140px;padding:11px 20px 11px clamp(112px,30vw,138px)}.intro-panel .speech-line{font-size:clamp(10px,2.8vw,12px);min-height:3.5em;padding-right:8px}}
+.intro-portrait{background-size:680% 270%;background-position:23.45% 79.4%}
