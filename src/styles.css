@@ -126,3 +126,16 @@ body{overflow:hidden}
 .summary-stats{border:2px solid #a88c61;border-radius:3px;background:#e9ddbd;box-shadow:inset 0 0 0 2px #f9f0d6}
 .summary-stats>div{border-color:#c3ab7e}
 @media(max-width:560px){.game-toolbar{gap:5px}.game-toolbar .audio-button,.game-toolbar .journal-button,.game-toolbar .fullscreen-button{height:38px;padding:0 8px;border-width:2px;font-size:7px}.game-toolbar .fullscreen-button{width:38px;padding:0}.game-toolbar .audio-button svg,.game-toolbar .journal-button svg,.game-toolbar .fullscreen-button svg{width:14px;height:14px}.game-toolbar .journal-button b{width:17px;height:17px;font-size:7px}.quest-card{border-width:2px}.controls-hint{border-width:2px;font-size:6px}.controls-hint kbd{border-width:1px 1px 2px;font-size:6px}.interact-prompt{font-size:7px}}
+
+/* Reduce visual noise and keep the characters as the focal point. */
+.game-toolbar{gap:7px}
+.game-toolbar .audio-button,.game-toolbar .journal-button,.game-toolbar .fullscreen-button{height:42px;width:42px;padding:0;display:grid;place-items:center}
+.game-toolbar .audio-button span,.game-toolbar .journal-button span{display:none}
+.game-toolbar .journal-button{position:relative}
+.game-toolbar .journal-button b{position:absolute;right:-5px;top:-5px;width:18px;height:18px}
+.world-location{display:none}
+.world-top-left{gap:8px}
+.quest-card{min-width:164px}
+.quest-copy>span{font-size:8px}
+.controls-hint{opacity:.9}
+@media(max-width:560px){.game-toolbar{gap:6px}.game-toolbar .audio-button,.game-toolbar .journal-button,.game-toolbar .fullscreen-button{width:38px;height:38px;padding:0}.game-toolbar .journal-button b{right:-5px;top:-5px}.quest-card{min-width:132px}}

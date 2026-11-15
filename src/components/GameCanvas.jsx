@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { modules } from '../data/modulesData'
 
 const W = 960, H = 600
+const CAMERA_ZOOM = 1.1
 const paths = [
   [0, 282, 960, 346, '#d8bd8c'], [447, 0, 510, 600, '#d8bd8c'],
   [0, 283, 960, 8, '#ead8b4'], [0, 337, 960, 8, '#c9aa78'],
@@ -44,9 +45,9 @@ function drawSprite(ctx, atlas, index, x, y, bob = 0) {
   const column = index % 5, row = Math.floor(index / 5)
   const sourceY = row * cellH, sourceH = cellH
   const sourceX = column * cellW
-  ctx.fillStyle = 'rgba(39,43,30,.28)'
-  ctx.fillRect(Math.round(x - 11), Math.round(y - 3), 22, 4)
-  ctx.drawImage(atlas, sourceX, sourceY, cellW, sourceH, Math.round(x - 22), Math.round(y - 64 + bob), 44, 64)
+  ctx.fillStyle = 'rgba(31,36,24,.38)'
+  ctx.fillRect(Math.round(x - 16), Math.round(y - 4), 32, 6)
+  ctx.drawImage(atlas, sourceX, sourceY, cellW, sourceH, Math.round(x - 26), Math.round(y - 72 + bob), 52, 72)
 }
 function drawBuilding(ctx, b) {
   ctx.fillStyle = 'rgba(60,49,38,.14)'; ctx.fillRect(b.x + 9, b.y + 11, b.w, b.h)
@@ -101,7 +102,14 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       if (now - lastPositionSent > 100) { onPosition({ x:p.x/W, y:p.y/H }); lastPositionSent = now }
 
       ctx.clearRect(0,0,W,H)
-      if (scenery.complete && scenery.naturalWidth) ctx.drawImage(scenery,0,0,W,H)
+      ctx.save()
+      ctx.translate(W/2,H/2);ctx.scale(CAMERA_ZOOM,CAMERA_ZOOM);ctx.translate(-W/2,-H/2)
+      if (scenery.complete && scenery.naturalWidth) {
+        ctx.filter='saturate(.76) brightness(.88) contrast(.94)'
+        ctx.drawImage(scenery,0,0,W,H)
+        ctx.filter='none'
+        ctx.fillStyle='rgba(75,82,53,.09)';ctx.fillRect(0,0,W,H)
+      }
       else {
         ctx.fillStyle='#c0ce9e';ctx.fillRect(0,0,W,H)
         for (let i=0;i<100;i++){const x=(i*113+19)%W,y=(i*71+43)%H;ctx.fillStyle=i%2?'#b6c790':'#d0d4a5';ctx.fillRect(x,y,2,2)}
@@ -120,21 +128,26 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
           if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,m.id,x,y)
           else drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
           const done=completed.includes(m.id), pulse=Math.sin(now/220 + m.id)*2
-          rounded(ctx,x-9,y-81+pulse,18,17,5,done?'#718d66':'#fff4d7');ctx.fillStyle=done?'#fff8e8':'#c67957';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-69+pulse)
-          ctx.font='bold 9px monospace';ctx.textAlign='center'
-          const labelWidth=Math.ceil(ctx.measureText(m.name).width)+10
-          ctx.fillStyle='#59442e';ctx.fillRect(x-labelWidth/2-1,y+1,labelWidth+2,14)
-          ctx.fillStyle='#f2e5c3';ctx.fillRect(x-labelWidth/2,y+2,labelWidth,12)
-          ctx.fillStyle='#463824';ctx.fillText(m.name,x,y+11)
+          rounded(ctx,x-9,y-98+pulse,18,17,5,done?'#718d66':'#fff4d7');ctx.fillStyle=done?'#fff8e8':'#c67957';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-86+pulse)
+          if(m.id===nearRef.current){
+            ctx.font='bold 9px monospace';ctx.textAlign='center'
+            const labelWidth=Math.ceil(ctx.measureText(m.name).width)+10
+            ctx.fillStyle='#59442e';ctx.fillRect(x-labelWidth/2-1,y+1,labelWidth+2,14)
+            ctx.fillStyle='#f2e5c3';ctx.fillRect(x-labelWidth/2,y+2,labelWidth,12)
+            ctx.fillStyle='#463824';ctx.fillText(m.name,x,y+11)
+          }
         }
       })
+      ctx.restore()
       raf.current = requestAnimationFrame(draw)
     }
     raf.current=requestAnimationFrame(draw)
     return ()=>cancelAnimationFrame(raf.current)
   }, [completed, dpad, onInteract, onNearby, onPosition, paused, sound])
   const handleClick = e => {
-    const rect = canvasRef.current.getBoundingClientRect(), x = (e.clientX-rect.left)/rect.width*W, y=(e.clientY-rect.top)/rect.height*H
+    const rect = canvasRef.current.getBoundingClientRect()
+    const screenX=(e.clientX-rect.left)/rect.width*W,screenY=(e.clientY-rect.top)/rect.height*H
+    const x=(screenX-W/2)/CAMERA_ZOOM+W/2,y=(screenY-H/2)/CAMERA_ZOOM+H/2
     const m = modules.find(n=>Math.hypot(n.x/100*W-x,n.y/100*H-y)<44)
     if (m) { const p=player.current; p.x=Math.max(28,Math.min(W-28,x));p.y=Math.max(24,Math.min(H-22,y)); onInteract(m.id) }
   }
