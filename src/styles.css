@@ -17,7 +17,7 @@ body{overflow:hidden}
 .game-area{width:100%;max-width:none;min-height:0;flex:1;margin:0}
 .world-frame{position:relative;flex:1;width:100%;height:100%;min-height:0;aspect-ratio:auto;max-height:none;overflow:hidden;border:0;border-radius:0;background:#c4ce9f;box-shadow:none}
 .world-frame::after{border:0;border-radius:0;box-shadow:inset 0 0 80px rgba(75,71,51,.09)}
-.game-canvas{position:absolute;top:50%;left:50%;width:min(100%,160vh);height:min(100%,62.5vw);transform:translate(-50%,-50%);}
+.game-canvas{position:absolute;inset:0;width:100%;height:100%;transform:none;}
 .world-top-left{top:18px;left:18px}
 .game-toolbar{position:absolute;z-index:3;top:18px;right:18px;display:flex;align-items:center;gap:8px}
 .game-toolbar .audio-button,.game-toolbar .journal-button{height:38px;border:1px solid rgba(244,236,211,.9);background:rgba(251,248,233,.93);box-shadow:0 2px 8px rgba(62,60,45,.13);backdrop-filter:blur(4px)}
@@ -26,7 +26,7 @@ body{overflow:hidden}
 .controls-hint kbd{font:inherit;color:#687355}.controls-hint>span{margin:0 4px;color:#b7ae98}
 .dpad{position:absolute;right:18px;bottom:16px;z-index:3}
 @media(max-width:800px){.dpad{position:absolute;right:14px;bottom:14px}.world-top-left{top:12px;left:12px}.game-toolbar{top:12px;right:12px}.world-location{top:59px;right:12px}.controls-hint{left:12px;bottom:12px}}
-@media(max-width:560px){.world-frame{aspect-ratio:auto}.game-canvas{width:min(100%,160vh);height:min(100%,62.5vw)}.world-top-left{top:9px;left:8px}.game-toolbar{top:9px;right:8px;gap:4px}.game-toolbar .audio-button,.game-toolbar .journal-button{height:33px}.world-location{top:51px;right:8px}.controls-hint{left:8px;bottom:9px;font-size:7px;padding:6px 7px}.dpad{right:8px;bottom:7px}}
+@media(max-width:560px){.world-frame{aspect-ratio:auto}.game-canvas{inset:0;width:100%;height:100%;transform:none}.world-top-left{top:9px;left:8px}.game-toolbar{top:9px;right:8px;gap:4px}.game-toolbar .audio-button,.game-toolbar .journal-button{height:33px}.world-location{top:51px;right:8px}.controls-hint{left:8px;bottom:9px;font-size:7px;padding:6px 7px}.dpad{right:8px;bottom:7px}}
 @media(max-width:380px){.controls-hint{font-size:6px}.world-top-left{gap:4px}.game-toolbar .journal-button{padding:0 6px}}
 
 /* Illustrated, storybook conversation panel and character busts. */

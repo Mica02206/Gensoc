@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { BookOpen, Volume2, VolumeX, Flower2, Sparkles, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, X, Check } from 'lucide-react'
+import { BookOpen, Volume2, VolumeX, Maximize2, Minimize2, Flower2, Sparkles, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, X, Check } from 'lucide-react'
 import { modules } from './data/modulesData'
 import GameCanvas from './components/GameCanvas'
 import DialogueBox from './components/DialogueBox'
@@ -26,7 +26,7 @@ function Dpad({ setDpad }) {
 }
 
 export default function App() {
-  const [active,setActive]=useState(null),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(true),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false)
+  const [active,setActive]=useState(null),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(true),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false),[isFullscreen,setIsFullscreen]=useState(false)
   const dpad=useRef({}), audio=useRef(null), mutedRef=useRef(muted), celebrated=useRef(false)
   mutedRef.current=muted
   const sound=useCallback(type=>{
@@ -39,6 +39,8 @@ export default function App() {
   const save=(id,kind)=>setSaved(current=>current.includes(`${id}:${kind}`)?current:[...current,`${id}:${kind}`])
   const complete=id=>setCompleted(current=>current.includes(id)?current:[...current,id])
   useEffect(()=>{if(completed.length===6&&!celebrated.current){celebrated.current=true;sound('complete');setSummary(true)}},[completed,sound])
+  useEffect(()=>{const update=()=>setIsFullscreen(Boolean(document.fullscreenElement));document.addEventListener('fullscreenchange',update);return()=>document.removeEventListener('fullscreenchange',update)},[])
+  const toggleFullscreen=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else await document.documentElement.requestFullscreen?.()}catch{}}
   const setDirection=(direction,value)=>{dpad.current={...dpad.current,[direction]:value}}
   const activeNpc=active===null?null:modules[active]
   const progress=completed.length
@@ -48,7 +50,7 @@ export default function App() {
     <section className="game-area">
       <div className="world-frame"><GameCanvas completed={completed} onNearby={nearby} onInteract={interact} onPosition={positionUpdate} dpad={dpad} sound={sound} paused={activeNpc!==null}/>
         <div className="world-top-left"><Minimap position={position} completed={completed}/><div className="quest-card"><div className="quest-icon"><Sparkles size={15}/></div><div className="quest-copy"><b>Village visits</b><span>Meet your six guides</span><div className="quest-progress"><i style={{width:`${progress/6*100}%`}}/></div><small>{String(progress).padStart(2,'0')} <span>/</span> 06 MODULES COMPLETED</small></div></div></div>
-        <div className="game-toolbar"><button className="audio-button" onClick={()=>setMuted(!muted)} aria-label={muted?'Turn sound on':'Mute sound'}>{muted?<VolumeX size={15}/>:<Volume2 size={15}/>}<span>{muted?'SOUND OFF':'SOUND ON'}</span></button><button className="journal-button" onClick={()=>setJournal(true)}><BookOpen size={16}/><span>Field journal</span><b>{new Set(saved.map(s=>s.split(':')[0])).size}</b></button></div>
+        <div className="game-toolbar"><button className="audio-button" onClick={()=>setMuted(!muted)} aria-label={muted?'Turn sound on':'Mute sound'}>{muted?<VolumeX size={15}/>:<Volume2 size={15}/>}<span>{muted?'SOUND OFF':'SOUND ON'}</span></button><button className="journal-button" onClick={()=>setJournal(true)}><BookOpen size={16}/><span>Field journal</span><b>{new Set(saved.map(s=>s.split(':')[0])).size}</b></button><button className="audio-button fullscreen-button" onClick={toggleFullscreen} aria-label={isFullscreen?'Exit fullscreen':'Enter fullscreen'} title={isFullscreen?'Exit fullscreen':'Enter fullscreen'}>{isFullscreen?<Minimize2 size={16}/>:<Maximize2 size={16}/>}</button></div>
         <div className="world-location"><i/> THE COMMONS</div>
         <div className="controls-hint"><kbd>WASD</kbd> / <kbd>↑ ↓ ← →</kbd> MOVE <span>·</span> <kbd>E</kbd> CHAT</div>
         {activeNpc&&<DialogueBox npc={activeNpc} completed={completed} saved={saved} onSave={save} onComplete={complete} onClose={()=>setActive(null)} sound={sound}/>}
