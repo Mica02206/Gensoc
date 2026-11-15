@@ -3,6 +3,7 @@ import { BookOpen, Volume2, VolumeX, Maximize2, Minimize2, Flower2, Sparkles, Ar
 import { modules } from './data/modulesData'
 import GameCanvas from './components/GameCanvas'
 import DialogueBox from './components/DialogueBox'
+import IntroDialogue from './components/IntroDialogue'
 import FieldJournal from './components/FieldJournal'
 
 function Minimap({ position, completed }) {
@@ -26,7 +27,7 @@ function Dpad({ setDpad }) {
 }
 
 export default function App() {
-  const [active,setActive]=useState(null),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(false),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false),[isFullscreen,setIsFullscreen]=useState(false)
+  const [active,setActive]=useState(null),[introOpen,setIntroOpen]=useState(true),[journal,setJournal]=useState(false),[completed,setCompleted]=useState([]),[saved,setSaved]=useState([]),[muted,setMuted]=useState(false),[position,setPosition]=useState({x:.5,y:.55}),[near,setNear]=useState(null),[summary,setSummary]=useState(false),[isFullscreen,setIsFullscreen]=useState(false)
   const dpad=useRef({}), audio=useRef(null), bgm=useRef(null), mutedRef=useRef(muted), celebrated=useRef(false)
   mutedRef.current=muted
   useEffect(()=>{
@@ -65,13 +66,14 @@ export default function App() {
   return (
     <main className="app-shell">
     <section className="game-area">
-      <div className="world-frame"><GameCanvas completed={completed} onNearby={nearby} onInteract={interact} onPosition={positionUpdate} dpad={dpad} sound={sound} paused={activeNpc!==null}/>
+      <div className="world-frame"><GameCanvas completed={completed} onNearby={nearby} onInteract={interact} onPosition={positionUpdate} dpad={dpad} sound={sound} paused={introOpen||activeNpc!==null}/>
         <div className="world-top-left"><Minimap position={position} completed={completed}/><div className="quest-card"><div className="quest-icon"><Sparkles size={15}/></div><div className="quest-copy"><b>Village visits</b><span>Meet your six guides</span><div className="quest-progress"><i style={{width:`${progress/6*100}%`}}/></div><small>{String(progress).padStart(2,'0')} <span>/</span> 06 MODULES COMPLETED</small></div></div></div>
         <div className="game-toolbar"><button className="audio-button" onClick={()=>setMuted(!muted)} aria-label={muted?'Turn sound on':'Mute sound'} title={muted?'Turn sound on':'Mute sound'}>{muted?<VolumeX size={15}/>:<Volume2 size={15}/>}<span>{muted?'SOUND OFF':'SOUND ON'}</span></button><button className="journal-button" onClick={()=>setJournal(true)} aria-label="Open field journal" title="Field journal"><BookOpen size={16}/><span>Field journal</span><b>{new Set(saved.map(s=>s.split(':')[0])).size}</b></button><button className="audio-button fullscreen-button" onClick={toggleFullscreen} aria-label={isFullscreen?'Exit fullscreen':'Enter fullscreen'} title={isFullscreen?'Exit fullscreen':'Enter fullscreen'}>{isFullscreen?<Minimize2 size={16}/>:<Maximize2 size={16}/>}</button></div>
         <div className="controls-hint"><kbd>WASD</kbd> / <kbd>↑ ↓ ← →</kbd> MOVE <span>·</span> <kbd>E</kbd> CHAT</div>
+        {introOpen&&<IntroDialogue onFinish={()=>setIntroOpen(false)} sound={sound}/>}
         {activeNpc&&<DialogueBox npc={activeNpc} completed={completed} saved={saved} onSave={save} onComplete={complete} onClose={()=>setActive(null)} sound={sound}/>}
-        {activeHint&&!activeNpc&&<button className="interact-prompt" onClick={()=>interact(near)}><kbd>E</kbd><span>CHAT WITH {activeHint.name.toUpperCase()}</span><b>↗</b></button>}
-        {!activeNpc&&<Dpad setDpad={setDirection}/>}
+        {activeHint&&!activeNpc&&!introOpen&&<button className="interact-prompt" onClick={()=>interact(near)}><kbd>E</kbd><span>CHAT WITH {activeHint.name.toUpperCase()}</span><b>↗</b></button>}
+        {!activeNpc&&!introOpen&&<Dpad setDpad={setDirection}/>}
       </div>
     </section>
     {journal&&<FieldJournal saved={saved} completed={completed} onClose={()=>setJournal(false)}/>}
