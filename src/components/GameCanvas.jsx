@@ -121,7 +121,11 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
           else drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
           const done=completed.includes(m.id), pulse=Math.sin(now/220 + m.id)*2
           rounded(ctx,x-9,y-81+pulse,18,17,5,done?'#718d66':'#fff4d7');ctx.fillStyle=done?'#fff8e8':'#c67957';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-69+pulse)
-          ctx.fillStyle='#fff3d7';ctx.fillRect(x-21,y+2,42,11);ctx.fillStyle='#49513d';ctx.font='8px monospace';ctx.fillText(m.name,x,y+10)
+          ctx.font='bold 9px monospace';ctx.textAlign='center'
+          const labelWidth=Math.ceil(ctx.measureText(m.name).width)+10
+          ctx.fillStyle='#59442e';ctx.fillRect(x-labelWidth/2-1,y+1,labelWidth+2,14)
+          ctx.fillStyle='#f2e5c3';ctx.fillRect(x-labelWidth/2,y+2,labelWidth,12)
+          ctx.fillStyle='#463824';ctx.fillText(m.name,x,y+11)
         }
       })
       raf.current = requestAnimationFrame(draw)
