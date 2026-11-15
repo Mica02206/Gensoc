@@ -176,3 +176,21 @@ body{overflow:hidden}
 .speech-answers button:focus-visible{outline:2px solid #8b714d;outline-offset:-2px}
 @media(max-width:800px){.dialogue-wrap{left:4%;right:4%;bottom:2.5%}.dialogue-portrait{width:clamp(155px,25vw,220px)}.speech-panel{padding-left:clamp(155px,25vw,220px);padding-right:32px;min-height:clamp(175px,28vh,240px)}}
 @media(max-width:560px){.dialogue-wrap{left:3%;right:3%;bottom:2%}.dialogue-portrait{left:-4px;width:clamp(120px,34vw,155px);bottom:-1px}.portrait-art{height:clamp(190px,27vh,235px)}.speech-panel{min-height:clamp(170px,27vh,225px);max-height:47vh;padding:14px 24px 14px clamp(125px,34vw,155px);border-width:4px;clip-path:polygon(14px 0,calc(100% - 14px) 0,100% 14px,100% calc(100% - 14px),calc(100% - 14px) 100%,14px 100%,0 calc(100% - 14px),0 14px)}.speech-panel::before{inset:6px;clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)}.speech-panel::after{right:15px;font-size:13px}.speech-line{font-size:8px;line-height:1.65;min-height:4.5em;max-height:22vh;padding-right:4px}.speech-line .typing-cursor{font-size:8px}.speech-next{right:18px;bottom:9px;font-size:7px}.speech-question{font-size:8px;line-height:1.5;margin:0 4px 7px 0}.speech-answers{max-height:22vh;gap:0}.speech-answers button{font-size:7px;line-height:1.4;padding:4px 3px;gap:5px}}
+
+/* Dialogue: keep the reference silhouette while making the panel compact and readable. */
+.dialogue-wrap{bottom:2.8%}
+.dialogue-portrait{width:clamp(180px,20vw,255px)}
+.portrait-art{height:clamp(170px,25vh,230px)}
+.speech-panel{min-height:clamp(145px,19vh,195px);max-height:38vh;padding:17px 38px 16px clamp(190px,22vw,290px)}
+.speech-line{font-size:clamp(13px,1.05vw,16px);line-height:1.65;min-height:4.2em;max-height:23vh}
+.speech-line .typing-cursor{font-size:inherit}
+.speech-question{font-size:clamp(13px,1vw,15px);line-height:1.5}
+.speech-answers{max-height:25vh}
+.speech-answers button{font-size:clamp(11px,.82vw,13px);line-height:1.45;padding:4px 7px}
+.speech-topics{position:relative;z-index:2;display:flex;flex-direction:column;justify-content:center;gap:4px;min-height:100%;}
+.speech-topics button{width:100%;display:flex;align-items:center;gap:9px;padding:4px 8px;border:0;border-bottom:1px dashed #c8b28e;background:transparent;color:#66513a;text-align:left;font:clamp(12px,.95vw,15px)/1.45 'Silkscreen',var(--mono);cursor:pointer}
+.speech-topics button span{color:#b18049;font-size:1.35em}
+.speech-topics button:hover{background:#e8d9bb;color:#51402e}
+.speech-topics button:focus-visible{outline:2px solid #8b714d;outline-offset:-2px}
+@media(max-width:800px){.dialogue-portrait{width:clamp(145px,23vw,195px)}.portrait-art{height:clamp(160px,23vh,205px)}.speech-panel{min-height:clamp(140px,20vh,180px);padding:14px 30px 14px clamp(155px,23vw,195px)}.speech-line{font-size:clamp(12px,1.6vw,14px)}.speech-topics button{font-size:clamp(11px,1.5vw,13px)}}
+@media(max-width:560px){.dialogue-portrait{width:clamp(112px,30vw,140px)}.portrait-art{height:clamp(150px,21vh,180px)}.speech-panel{min-height:clamp(135px,19vh,165px);max-height:42vh;padding:11px 20px 11px clamp(115px,30vw,140px)}.speech-panel::after{right:11px;font-size:11px}.speech-line{font-size:clamp(10px,2.8vw,12px);line-height:1.55;min-height:4em;max-height:20vh}.speech-question{font-size:clamp(10px,2.7vw,12px)}.speech-answers button{font-size:clamp(9px,2.4vw,11px)}.speech-topics{gap:2px}.speech-topics button{font-size:clamp(9px,2.5vw,11px);gap:5px;padding:3px 4px}}
