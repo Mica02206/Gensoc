@@ -39,6 +39,15 @@ function drawPerson(ctx, x, y, outfit, skin, hair, scale = 1, frame = 0, directi
   else if (direction === 'up') { ctx.fillStyle = hair; ctx.fillRect(x - 8*s, y - 15*s, 16*s, 11*s) }
   else { ctx.fillStyle = '#382d2b'; ctx.fillRect(x + (direction === 'right' ? 3 : -5)*s, y - 10*s, 2*s, 2*s) }
 }
+function drawSprite(ctx, atlas, index, x, y, bob = 0) {
+  const cellW = atlas.naturalWidth / 5, cellH = atlas.naturalHeight / 2
+  const column = index % 5, row = Math.floor(index / 5)
+  const sourceY = row * cellH, sourceH = cellH
+  const sourceX = column * cellW
+  ctx.fillStyle = 'rgba(39,43,30,.28)'
+  ctx.fillRect(Math.round(x - 11), Math.round(y - 3), 22, 4)
+  ctx.drawImage(atlas, sourceX, sourceY, cellW, sourceH, Math.round(x - 22), Math.round(y - 64 + bob), 44, 64)
+}
 function drawBuilding(ctx, b) {
   ctx.fillStyle = 'rgba(60,49,38,.14)'; ctx.fillRect(b.x + 9, b.y + 11, b.w, b.h)
   ctx.fillStyle = b.a; ctx.fillRect(b.x - 8, b.y + 16, b.w + 16, 23)
@@ -68,6 +77,7 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
   useEffect(() => {
     const canvas = canvasRef.current, ctx = canvas.getContext('2d')
     const scenery = new Image(); scenery.src = '/assets/village-map.png'
+    const sprites = new Image(); sprites.src = '/assets/character-sprites.png'
     ctx.imageSmoothingEnabled = false
     let previous = performance.now(), walk = 0, footstep = 0, lastPositionSent = 0
     const draw = now => {
@@ -102,11 +112,16 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       // Draw characters in depth order.
       const actors = modules.map(m=>({ y:m.y/100*H, m })).concat([{ y:player.current.y, player:true }]).sort((a,b)=>a.y-b.y)
       actors.forEach(actor=>{
-        if (actor.player) drawPerson(ctx,p.x,p.y,'#d28154','#e6b48b','#53433e',1.75,frame.current, dx ? (dx>0?'right':'left') : dy<0?'up':'down')
-        else { const m=actor.m, x=m.x/100*W, y=m.y/100*H; drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
+        if (actor.player) {
+          const spriteIndex = dy < 0 ? 9 : dx < 0 ? 7 : dx > 0 ? 8 : 6
+          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,spriteIndex,p.x,p.y,dx||dy?frame.current:0)
+          else drawPerson(ctx,p.x,p.y,'#d28154','#e6b48b','#53433e',1.75,frame.current,dx?(dx>0?'right':'left'):dy<0?'up':'down')
+        } else { const m=actor.m, x=m.x/100*W, y=m.y/100*H
+          if (sprites.complete && sprites.naturalWidth) drawSprite(ctx,sprites,m.id,x,y)
+          else drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
           const done=completed.includes(m.id), pulse=Math.sin(now/220 + m.id)*2
-          rounded(ctx,x-10,y-49+pulse,20,19,6,done?'#718d66':'#f7f0dc');ctx.fillStyle=done?'#f8f1df':'#c67957';ctx.font='bold 14px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-35+pulse)
-          ctx.fillStyle='#53654e';ctx.font='9px monospace';ctx.fillText(m.name,x,y+27)
+          rounded(ctx,x-9,y-81+pulse,18,17,5,done?'#718d66':'#fff4d7');ctx.fillStyle=done?'#fff8e8':'#c67957';ctx.font='bold 13px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-69+pulse)
+          ctx.fillStyle='#fff3d7';ctx.fillRect(x-21,y+2,42,11);ctx.fillStyle='#49513d';ctx.font='8px monospace';ctx.fillText(m.name,x,y+10)
         }
       })
       raf.current = requestAnimationFrame(draw)
