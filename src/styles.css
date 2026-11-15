@@ -139,3 +139,10 @@ body{overflow:hidden}
 .quest-copy>span{font-size:8px}
 .controls-hint{opacity:.9}
 @media(max-width:560px){.game-toolbar{gap:6px}.game-toolbar .audio-button,.game-toolbar .journal-button,.game-toolbar .fullscreen-button{width:38px;height:38px;padding:0}.game-toolbar .journal-button b{right:-5px;top:-5px}.quest-card{min-width:132px}}
+
+/* Preserve the map's 16:10 proportions in browser fullscreen. */
+.world-frame::before{content:"";position:absolute;inset:-16px;z-index:0;background:url('/assets/village-map.png') center/cover no-repeat;filter:blur(10px) brightness(.62) saturate(.72);transform:scale(1.02);pointer-events:none}
+.game-canvas{inset:auto;top:50%;left:50%;width:min(100%,160vh);height:min(100%,62.5vw);aspect-ratio:8/5;transform:translate(-50%,-50%);z-index:1}
+.world-frame::after{z-index:2}
+.world-top-left,.game-toolbar{z-index:3}
+.world-frame:has(.dialogue-wrap)::before{inset:0;z-index:2;background:rgba(23,34,24,.28);filter:none;transform:none}
