@@ -196,3 +196,6 @@ body{overflow:hidden}
 @media(max-width:560px){.dialogue-portrait{width:clamp(112px,30vw,140px)}.portrait-art{height:clamp(150px,21vh,180px)}.speech-panel{min-height:clamp(135px,19vh,165px);max-height:42vh;padding:11px 20px 11px clamp(115px,30vw,140px)}.speech-panel::after{right:11px;font-size:11px}.speech-line{font-size:clamp(10px,2.8vw,12px);line-height:1.55;min-height:4em;max-height:20vh}.speech-question{font-size:clamp(10px,2.7vw,12px)}.speech-answers button{font-size:clamp(9px,2.4vw,11px)}.speech-topics{gap:2px}.speech-topics button{font-size:clamp(9px,2.5vw,11px);gap:5px;padding:3px 4px}}
 .dialogue-wrap{left:50%;right:auto;width:min(92vw,1000px);transform:translateX(-50%)}
 @media(max-width:560px){.dialogue-wrap{width:calc(100% - 20px)}}
+.speech-panel{clip-path:none;border-radius:26px}
+.speech-panel::before{clip-path:none;border-radius:18px}
+@media(max-width:560px){.speech-panel{clip-path:none;border-radius:20px}.speech-panel::before{clip-path:none;border-radius:13px}}
