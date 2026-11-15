@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { BookOpen, Volume2, VolumeX, MapPin, Flower2, Sparkles, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, X, Check } from 'lucide-react'
+import { BookOpen, Volume2, VolumeX, Flower2, Sparkles, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, X, Check } from 'lucide-react'
 import { modules } from './data/modulesData'
 import GameCanvas from './components/GameCanvas'
 import DialogueBox from './components/DialogueBox'
@@ -43,20 +43,21 @@ export default function App() {
   const activeNpc=active===null?null:modules[active]
   const progress=completed.length
   const activeHint=near===null?null:modules[near]
-  return <main className="app-shell">
-    <header className="topbar"><div className="brand-lockup"><div className="brand-mark"><Flower2 size={20}/></div><div><div className="brand-name">goodfolk <span>grove</span></div><div className="brand-caption">A LITTLE VILLAGE OF BIG IDEAS</div></div></div><div className="topbar-center"><MapPin size={14}/><span>THE COMMONS</span><i>·</i><span>DAY 01</span></div><div className="topbar-actions"><button className="audio-button" onClick={()=>setMuted(!muted)} aria-label={muted?'Turn sound on':'Mute sound'}>{muted?<VolumeX size={15}/>:<Volume2 size={15}/>}<span>{muted?'SOUND OFF':'SOUND ON'}</span></button><button className="journal-button" onClick={()=>setJournal(true)}><BookOpen size={16}/><span>Field journal</span><b>{new Set(saved.map(s=>s.split(':')[0])).size}</b></button></div></header>
+  return (
+    <main className="app-shell">
     <section className="game-area">
-      <div className="scene-heading"><div><div className="scene-eyebrow"><span className="eyebrow-dot"/>YOUR STORY BEGINS</div><h1>Good morning, <em>wayfarer.</em></h1><p>A quiet village, six kind guides, and a few ideas worth carrying home.</p></div><div className="scene-weather"><div className="weather-sun">☼</div><span>SOFT SUNSHINE<small>Perfect for a stroll</small></span></div></div>
       <div className="world-frame"><GameCanvas completed={completed} onNearby={nearby} onInteract={interact} onPosition={positionUpdate} dpad={dpad} sound={sound} paused={activeNpc!==null}/>
         <div className="world-top-left"><Minimap position={position} completed={completed}/><div className="quest-card"><div className="quest-icon"><Sparkles size={15}/></div><div className="quest-copy"><b>Village visits</b><span>Meet your six guides</span><div className="quest-progress"><i style={{width:`${progress/6*100}%`}}/></div><small>{String(progress).padStart(2,'0')} <span>/</span> 06 MODULES COMPLETED</small></div></div></div>
+        <div className="game-toolbar"><button className="audio-button" onClick={()=>setMuted(!muted)} aria-label={muted?'Turn sound on':'Mute sound'}>{muted?<VolumeX size={15}/>:<Volume2 size={15}/>}<span>{muted?'SOUND OFF':'SOUND ON'}</span></button><button className="journal-button" onClick={()=>setJournal(true)}><BookOpen size={16}/><span>Field journal</span><b>{new Set(saved.map(s=>s.split(':')[0])).size}</b></button></div>
         <div className="world-location"><i/> THE COMMONS</div>
+        <div className="controls-hint"><kbd>WASD</kbd> / <kbd>↑ ↓ ← →</kbd> MOVE <span>·</span> <kbd>E</kbd> CHAT</div>
         {activeNpc&&<DialogueBox npc={activeNpc} completed={completed} saved={saved} onSave={save} onComplete={complete} onClose={()=>setActive(null)} sound={sound}/>}
         {activeHint&&!activeNpc&&<button className="interact-prompt" onClick={()=>interact(near)}><kbd>E</kbd><span>CHAT WITH {activeHint.name.toUpperCase()}</span><b>↗</b></button>}
+        {!activeNpc&&<Dpad setDpad={setDirection}/>}
       </div>
-      <div className="below-world"><div className="controls-copy"><div className="controls-icon">⌘</div><div><b>Take a little walk</b><span>WASD / ARROW KEYS <i>·</i> <kbd>E</kbd> TO CHAT</span></div></div><div className="village-note"><span>✿</span> “There’s always room to learn from one another.”</div><Dpad setDpad={setDirection}/><div className="npc-legend"><span className="legend-marker">!</span> HAS SOMETHING TO SHARE <i/> <span className="legend-marker completed-mark">✓</span> CHAPTER COMPLETE</div></div>
     </section>
-    <footer className="page-footer"><span>GENDER & DEVELOPMENT INTEGRATION <i>·</i> A LEARNING ADVENTURE</span><span>MADE WITH CARE <b>✦</b></span></footer>
     {journal&&<FieldJournal saved={saved} completed={completed} onClose={()=>setJournal(false)}/>}
     {summary&&<Summary completed={completed} saved={saved} onClose={()=>{setSummary(false);setActive(null)}} onJournal={()=>{setSummary(false);setActive(null);setJournal(true)}}/>}
-  </main>
+    </main>
+  )
 }
