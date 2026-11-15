@@ -67,6 +67,7 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
   }, [])
   useEffect(() => {
     const canvas = canvasRef.current, ctx = canvas.getContext('2d')
+    const scenery = new Image(); scenery.src = '/assets/grove-background.png'
     ctx.imageSmoothingEnabled = false
     let previous = performance.now(), walk = 0, footstep = 0, lastPositionSent = 0
     const draw = now => {
@@ -77,10 +78,8 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       const mag = Math.hypot(dx,dy) || 1, speed = (k.shift ? 3.4 : 2.4) * dt
       const p = player.current
       let nx = Math.max(28, Math.min(W - 28, p.x + dx/mag*speed)), ny = Math.max(24, Math.min(H - 22, p.y + dy/mag*speed))
-      const blocked = buildings.some(b => nx > b.x - 15 && nx < b.x + b.w + 15 && ny > b.y + 29 && ny < b.y + b.h - 8)
-        || treePositions.some(([tx,ty]) => Math.abs(nx-tx)<18 && ny>ty-7 && ny<ty+23)
-        || (nx>383&&nx<453&&ny>448&&ny<487) || (nx>490&&nx<560&&ny>448&&ny<487)
-        || (nx>464&&nx<495&&ny>294&&ny<326)
+      const blocked = [{x:42,y:50,w:175,h:185},{x:304,y:42,w:300,h:178},{x:550,y:52,w:380,h:184}]
+        .some(b => nx>b.x&&nx<b.x+b.w&&ny>b.y&&ny<b.y+b.h)
       if (!blocked) { p.x = nx; p.y = ny }
       if (dx || dy) { walk += dt; footstep += dt; frame.current = Math.floor(walk / 8) % 2; if (footstep > 22) { sound('step'); footstep = 0 } } else footstep = 0
       const closest = modules.reduce((best, m) => Math.hypot(m.x/100*W-p.x, m.y/100*H-p.y) < best.dist ? { id:m.id, dist:Math.hypot(m.x/100*W-p.x,m.y/100*H-p.y) } : best, { id:null, dist: Infinity })
@@ -91,23 +90,20 @@ export default function GameCanvas({ completed, onNearby, onInteract, onPosition
       lastInteract.current = interact
       if (now - lastPositionSent > 100) { onPosition({ x:p.x/W, y:p.y/H }); lastPositionSent = now }
 
-      ctx.clearRect(0,0,W,H); ctx.fillStyle = '#c7d1a3'; ctx.fillRect(0,0,W,H)
-      ctx.fillStyle = '#c0ce9e'; ctx.fillRect(0, 0, W, H)
-      for (let i=0;i<100;i++){ const x=(i*113+19)%W, y=(i*71+43)%H; ctx.fillStyle=i%2?'#b6c790':'#d0d4a5'; ctx.fillRect(x,y,2,2) }
-      for (const [x,y] of treePositions) drawTree(ctx,x,y, x % 2 ? 1 : .9)
-      for (const [x,y,c] of flowerPositions) { if (y < 205 || y > 405) continue; ctx.fillStyle=['#ead795','#e3a48d','#f0ead0'][c]; ctx.fillRect(x,y,4,4); ctx.fillStyle='#738c59';ctx.fillRect(x+1,y+4,2,4) }
-      for(const [x,y,w,h,color] of paths) { ctx.fillStyle=color;ctx.fillRect(x,y,w,h) }
-      for(let x=5;x<W;x+=38){ctx.fillStyle='rgba(110,83,52,.12)';ctx.fillRect(x,321,2,3);ctx.fillRect(x+17,290,2,3)}
-      buildings.forEach(b=>drawBuilding(ctx,b))
-      // Garden beds and a little fountain make the shared square feel lived in.
-      ctx.fillStyle='#876c4b';ctx.fillRect(394,454,54,29);ctx.fillRect(501,454,54,29);ctx.fillStyle='#607c4a';ctx.fillRect(399,459,44,19);ctx.fillRect(506,459,44,19)
-      for(let i=0;i<7;i++){ctx.fillStyle=['#e1a28f','#e9d396','#cc9da7'][i%3];ctx.fillRect(402+i*6,464+(i%2)*5,4,4)}
-      ctx.fillStyle='#b4c8b2';ctx.fillRect(471,300,19,19);ctx.fillStyle='#e4d9b9';ctx.fillRect(474,303,13,13);ctx.fillStyle='#88a9a2';ctx.fillRect(478,306,5,8)
+      ctx.clearRect(0,0,W,H)
+      if (scenery.complete && scenery.naturalWidth) ctx.drawImage(scenery,0,0,W,H)
+      else {
+        ctx.fillStyle='#c0ce9e';ctx.fillRect(0,0,W,H)
+        for (let i=0;i<100;i++){const x=(i*113+19)%W,y=(i*71+43)%H;ctx.fillStyle=i%2?'#b6c790':'#d0d4a5';ctx.fillRect(x,y,2,2)}
+        for(const [x,y] of treePositions)drawTree(ctx,x,y,x%2?1:.9)
+        for(const [x,y,w,h,color]of paths){ctx.fillStyle=color;ctx.fillRect(x,y,w,h)}
+        buildings.forEach(b=>drawBuilding(ctx,b))
+      }
       // Draw characters in depth order.
       const actors = modules.map(m=>({ y:m.y/100*H, m })).concat([{ y:player.current.y, player:true }]).sort((a,b)=>a.y-b.y)
       actors.forEach(actor=>{
-        if (actor.player) drawPerson(ctx,p.x,p.y,'#d28154','#e6b48b','#53433e',1.14,frame.current, dx ? (dx>0?'right':'left') : dy<0?'up':'down')
-        else { const m=actor.m, x=m.x/100*W, y=m.y/100*H; drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1,0)
+        if (actor.player) drawPerson(ctx,p.x,p.y,'#d28154','#e6b48b','#53433e',1.75,frame.current, dx ? (dx>0?'right':'left') : dy<0?'up':'down')
+        else { const m=actor.m, x=m.x/100*W, y=m.y/100*H; drawPerson(ctx,x,y,m.outfit,m.skin,m.hair,1.55,0)
           const done=completed.includes(m.id), pulse=Math.sin(now/220 + m.id)*2
           rounded(ctx,x-10,y-49+pulse,20,19,6,done?'#718d66':'#f7f0dc');ctx.fillStyle=done?'#f8f1df':'#c67957';ctx.font='bold 14px monospace';ctx.textAlign='center';ctx.fillText(done?'✓':'!',x,y-35+pulse)
           ctx.fillStyle='#53654e';ctx.font='9px monospace';ctx.fillText(m.name,x,y+27)

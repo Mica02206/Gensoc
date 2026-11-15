@@ -28,3 +28,33 @@ body{overflow:hidden}
 @media(max-width:800px){.dpad{position:absolute;right:14px;bottom:14px}.world-top-left{top:12px;left:12px}.game-toolbar{top:12px;right:12px}.world-location{top:59px;right:12px}.controls-hint{left:12px;bottom:12px}}
 @media(max-width:560px){.world-frame{aspect-ratio:auto}.game-canvas{width:min(100%,160vh);height:min(100%,62.5vw)}.world-top-left{top:9px;left:8px}.game-toolbar{top:9px;right:8px;gap:4px}.game-toolbar .audio-button,.game-toolbar .journal-button{height:33px}.world-location{top:51px;right:8px}.controls-hint{left:8px;bottom:9px;font-size:7px;padding:6px 7px}.dpad{right:8px;bottom:7px}}
 @media(max-width:380px){.controls-hint{font-size:6px}.world-top-left{gap:4px}.game-toolbar .journal-button{padding:0 6px}}
+
+/* Illustrated, storybook conversation panel and character busts. */
+.world-frame:has(.dialogue-wrap)::before{content:"";position:absolute;inset:0;z-index:1;background:rgba(23,34,24,.28);pointer-events:none}
+.world-frame:has(.dialogue-wrap) .world-top-left,.world-frame:has(.dialogue-wrap) .game-toolbar,.world-frame:has(.dialogue-wrap) .world-location{z-index:3}
+.dialogue-wrap{left:7%;right:7%;bottom:3.2%;min-height:0;filter:drop-shadow(0 9px 22px rgba(18,25,16,.38))}
+.dialogue-card{min-height:clamp(220px,31vh,310px);max-height:min(48vh,440px);padding:clamp(20px,3vh,32px) clamp(20px,3vw,40px) 22px clamp(220px,27vw,350px);border:5px solid #98734f;border-radius:28px 23px 28px 23px;background:#f3ecd9;box-shadow:inset 0 0 0 3px #fff9e9,inset 0 0 0 5px #e1ceb0,0 4px 0 rgba(89,63,42,.3);}
+.dialogue-card::before{content:"";position:absolute;inset:9px;border:1px solid rgba(177,145,103,.36);border-radius:19px 15px 19px 15px;pointer-events:none}
+.dialogue-card>*{position:relative}
+.dialogue-card h2{font-size:clamp(22px,2.2vw,31px);color:#66523f;letter-spacing:-.3px;margin:0 0 7px}
+.dialogue-sub,.feedback-text{font-size:13px;color:#90775d}
+.dialogue-header{font-size:9px;color:#9a8061;margin-bottom:14px}
+.portrait-art{width:100%;height:clamp(220px,35vh,330px);background-repeat:no-repeat;background-size:300% 200%;filter:drop-shadow(0 5px 4px rgba(34,27,20,.38));}
+.dialogue-portrait{left:0;bottom:-2px;width:clamp(200px,24vw,300px);}
+.portrait-caption{top:-15px;bottom:auto;left:50%;padding:7px 13px;border:2px solid #a27a54;border-radius:7px;background:#fff3d8;box-shadow:0 3px 0 #d6c19d;color:#6b533d;font:500 10px var(--mono);letter-spacing:.03em;}
+.dialogue-options{gap:9px;margin-top:13px}
+.dialogue-options>button{min-height:68px;background:#fbf7e9;border:2px solid #e2d4b8;border-radius:9px;padding:10px 12px}
+.dialogue-options>button:hover{background:#fff9e8;border-color:#c4a77a}
+.dialogue-options>button>b{font-size:11px;color:#655744}
+.dialogue-options>button>small{font-size:9px;color:#9c8b72}
+.story-text{font:13px/1.75 var(--mono);color:#6f604f;max-height:20vh;padding-right:10px}
+.chapter-kicker{color:#a27f58}
+.saved-tag{font-size:8px;color:#7f8a64}
+.quiz-options{gap:8px;margin:13px 0}
+.quiz-options button{min-height:42px;padding:9px 11px;border:2px solid #e5d8bd;background:#fbf8ec;font-size:11px;color:#70614e}
+.quiz-options button:hover{border-color:#b9a078;background:#fff9e9}
+.option-key{width:21px;height:21px;flex-basis:21px;background:#eee5d1;color:#8e704e}
+.interact-prompt{z-index:4}
+.dpad{z-index:4}
+@media(max-width:800px){.dialogue-wrap{left:4%;right:4%;bottom:2.5%}.dialogue-card{padding-left:clamp(155px,25vw,220px);padding-right:18px}.dialogue-portrait{width:clamp(155px,25vw,220px)}.portrait-art{height:clamp(215px,32vh,285px)}}
+@media(max-width:560px){.dialogue-wrap{left:3%;right:3%;bottom:2%}.dialogue-card{min-height:220px;max-height:47vh;padding:16px 10px 12px clamp(125px,34vw,155px);border-width:4px;border-radius:20px 17px 20px 17px}.dialogue-card::before{inset:6px;border-radius:14px}.dialogue-header{margin-bottom:7px;font-size:7px}.dialogue-card h2{font-size:16px;line-height:1.18}.dialogue-sub,.feedback-text{font-size:9px}.dialogue-portrait{left:-4px;width:clamp(120px,34vw,155px);bottom:-1px}.portrait-art{height:clamp(190px,27vh,235px)}.portrait-caption{top:-14px;font-size:7px;padding:5px 7px}.dialogue-options{gap:4px;margin-top:7px}.dialogue-options>button{min-height:38px;padding:5px 6px;grid-template-columns:15px 1fr 10px}.dialogue-options>button>b{font-size:8px}.dialogue-options>button>small{font-size:7px}.story-text{font-size:9px;line-height:1.5;max-height:18vh}.chapter-kicker{font-size:6px}.quiz-options{gap:4px;margin:7px 0}.quiz-options button{min-height:31px;padding:5px;font-size:8px}.option-key{width:16px;height:16px;flex-basis:16px}.dialogue-footer{margin-top:5px}.saved-tag,.quiet-note{font-size:6px}.result-actions{margin-top:9px}}

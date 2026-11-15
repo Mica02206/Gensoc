@@ -1,24 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 function Portrait({ npc }) {
-  const ref = useRef(null)
-  useEffect(() => {
-    const c=ref.current,ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;ctx.clearRect(0,0,144,162)
-    // warm paper backdrop and soft pixel frame
-    ctx.fillStyle='#e8c99b';ctx.fillRect(0,0,144,162);ctx.fillStyle='#d9b581';ctx.fillRect(0,0,144,7);ctx.fillRect(0,155,144,7)
-    ctx.fillStyle='#bed0a4';ctx.fillRect(9,11,126,119);ctx.fillStyle='#d6dfbc';ctx.fillRect(17,20,110,103)
-    ctx.fillStyle='rgba(255,255,255,.35)';ctx.fillRect(21,25,4,70)
-    // shoulders, collar and face
-    ctx.fillStyle=npc.outfit;ctx.fillRect(18,119,108,34);ctx.fillRect(10,136,124,17)
-    ctx.fillStyle=npc.accent;ctx.fillRect(54,119,36,17);ctx.fillRect(67,131,10,22)
-    ctx.fillStyle=npc.skin;ctx.fillRect(49,45,47,70);ctx.fillRect(44,63,5,19);ctx.fillRect(96,63,5,19)
-    ctx.fillStyle=npc.hair;ctx.fillRect(43,32,60,23);ctx.fillRect(39,44,12,50);ctx.fillRect(96,43,11,40);ctx.fillRect(48,26,45,11)
-    ctx.fillStyle=npc.skin;ctx.fillRect(47,42,5,10);ctx.fillRect(51,39,45,18)
-    ctx.fillStyle='#453836';ctx.fillRect(58,68,5,4);ctx.fillRect(82,68,5,4);ctx.fillRect(68,90,12,3)
-    ctx.fillStyle='#edc59c';ctx.fillRect(52,77,10,4);ctx.fillRect(84,77,10,4)
-    ctx.fillStyle='#fff1d5';ctx.fillRect(7,7,130,4);ctx.fillRect(7,151,130,4)
-  },[npc])
-  return <canvas ref={ref} width="144" height="162" className="portrait" aria-label={`${npc.name} portrait`} />
+  const col=npc.id%3,row=Math.floor(npc.id/3)
+  return <div className="portrait-art" role="img" aria-label={`${npc.name} portrait`} style={{backgroundImage:"url('/assets/npc-portraits.png')",backgroundPosition:`${col*50}% ${row*100}%`}} />
 }
 
 export default function DialogueBox({ npc, completed, saved, onSave, onComplete, onClose, sound }) {
